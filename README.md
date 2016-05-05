@@ -4,7 +4,7 @@ Helps you to can usual code review comments for repeated use. A lot of them will
 
 ## How to get it
 
-[Install it from the Chrome Web Store]()
+[Install it from the Chrome Web Store](https://chrome.google.com/webstore/detail/crucible-canned-responses/kloodckjgcnpbnljddbfaempcmcklgmb)
 
 ## What is it
 
