@@ -207,7 +207,8 @@
 .select-menu-modal-holder {
     position: absolute;
     z-index: 30;
-    display: none
+    display: none;
+    text-align: left;
 }
 
 .select-menu-modal {
@@ -383,7 +384,7 @@
 
 .select-menu-item {
     display: block;
-    padding: 8px 8px 8px 30px;
+    padding: 8px 8px 8px 8px;
     overflow: hidden;
     color: inherit;
     cursor: pointer;
