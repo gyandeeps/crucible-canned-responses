@@ -2,6 +2,10 @@ var defaultAnswers = [
     {
         name: "+1",
         description: "+1"
+    },
+    {
+        name: "LGTM",
+        description: "Looks good to me."
     }
 ];
 
