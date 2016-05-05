@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name" : "Crucible Canned Responses",
     "description" : "Choose from a set of canned responses when commenting on crucible code reviews",
-    "version" : "1.0.0",
+    "version" : "0.0.1",
     "icons": {
         "128": "logo.png"
     },
