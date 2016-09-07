@@ -1,3 +1,7 @@
+.quick-reply-check {
+    -webkit-appearance: checkbox!important;
+}
+
 .gcr-ext-editor-dialog {
   box-sizing: border-box;
   position: fixed;

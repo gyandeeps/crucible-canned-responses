@@ -22,6 +22,12 @@ The extension adds a little button inside crucible comment editing view, that al
 
 The extension comes with a few default canned responses, but you can edit them and add your own! In the dropdown, press the edit link, and there you can add more canned responses and also change the auto comment option on/off.
 
+### Quick Reply
+
+For each canned response you can set it up to be also a quick response reply. It will come up along side existing comments.
+
+<img width="800" alt="animated gif of the extension in action" src="https://raw.githubusercontent.com/gyandeeps/crucible-canned-responses/master/docs/quick-reply.gif">
+
 ## Special Thanks
 
 Thanks to [Monica Dinculescu](https://github.com/notwaldorf), as this project is crucible version of her implementation of [canned github responses](https://github.com/notwaldorf/github-canned-responses).
