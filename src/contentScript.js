@@ -1,5 +1,6 @@
 var __gcrExtAnswers;
 var __submitOnClick = false;
+var __quickReply = {};
 
 (function(){
     "use strict";
@@ -51,6 +52,7 @@ var __submitOnClick = false;
         chrome.runtime.sendMessage({action: 'load'}, function(response){
             __gcrExtAnswers = response.answers;
             __submitOnClick = response.submitOnClick;
+            __quickReply = response.quickReply;
             addAnswerButton();
         });
     }
@@ -106,13 +108,65 @@ var __submitOnClick = false;
             }
         }
 
+
+        var observer = new MutationObserver(function(mutations, observer) {
+            mutations.forEach(function(mut){
+                if (mut.addedNodes.length > 0) {
+                    addQuickReply(mut.target);
+                }
+            });
+        });
+
         for(var i = 0; i < targets.length; i++){
+            observer.observe(targets[i], {
+                childList: true
+            });
             targets[i].removeEventListener('click', insertButton);
             targets[i].addEventListener('click', insertButton);
         }
     }
 
-    function createNodeWithClass(nodeType, className){
+    function fireClick(node){
+        if (document.createEvent) {
+            var evt = document.createEvent('MouseEvents');
+            evt.initEvent('click', true, false);
+            node.dispatchEvent(evt);
+        } else if (document.createEventObject) {
+            node.fireEvent('onclick') ;
+        } else if (typeof node.onclick == 'function') {
+            node.onclick();
+        }
+    }
+
+    function createQuickReplyDom(name, description) {
+        var elem = createNodeWithClass("a", "");
+
+        elem.innerText = name;
+        elem.onclick = function(){
+            fireClick(this.parentElement.parentElement.children[0].children[0]);
+            document.getElementById("replyCommentForm").querySelector(".commentTextarea").value = description;
+            document.getElementById("replyCommentForm").querySelector('.aui-button.aui-button-primary.postButton.defaultButton').click();
+        };
+
+        var liElem = createNodeWithClass("li", "");
+        liElem.appendChild(elem);
+
+        return liElem;
+    }
+
+    function addQuickReply(target) {
+        var commentBlocks = target.querySelectorAll(".comment-container");
+
+        commentBlocks.forEach(function(commentBlock) {
+            if (commentBlock.querySelector(".comment-actions-inner")) {
+                Object.keys(__quickReply).forEach(function(key) {
+                    commentBlock.querySelector(".comment-actions-inner").appendChild(createQuickReplyDom(key, __quickReply[key]));
+                });
+            }
+        });
+    }
+
+    function createNodeWithClass(nodeType, className, text){
         var element = document.createElement(nodeType);
         element.className = className;
         return element;
@@ -272,9 +326,17 @@ var __submitOnClick = false;
         document.body.appendChild(dialog);
 
         window.gcrExtEditorSaveAnswers = function(){
-            chrome.runtime.sendMessage({action: 'save', answers: __gcrExtAnswers, submitOnClick: __submitOnClick}, function(response){
-                addAnswerButton();
-            });
+            chrome.runtime.sendMessage(
+                {
+                    action: 'save',
+                    answers: __gcrExtAnswers,
+                    submitOnClick: __submitOnClick,
+                    quickReply: __quickReply
+                },
+                function(response){
+                    addAnswerButton();
+                }
+            );
         };
 
         gcrExtEditorSetup();

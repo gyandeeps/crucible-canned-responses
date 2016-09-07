@@ -1,7 +1,7 @@
 function gcrExtEditorUpdateAnswersList(){
     list.innerHTML = "";
     for(var i = 0; i < __gcrExtAnswers.length; i++){
-        var li = gcrExtEditorCreateItem(__gcrExtAnswers[i].name, __gcrExtAnswers[i].description);
+        var li = gcrExtEditorCreateItem(__gcrExtAnswers[i].name, __gcrExtAnswers[i].description, __quickReply[__gcrExtAnswers[i].name]);
         li.answerId = i;
         list.appendChild(li);
     }
@@ -47,35 +47,68 @@ function gcrExtEditorSetup(){
     });
 
     document.querySelector(".gcr-ext-editor-list").addEventListener("click", function(event){
-        if(event.target.tagName.toLowerCase() !== "button"){
+        var target = null;
+
+        if(event.target.classList.contains("quick-reply")) {
+            target = event.target.parentNode;
+        }
+        else if(event.target.tagName.toLowerCase() !== "button") {
             return;
         }
+        else {
+            target = event.target;
+        }
 
-        var button = event.target;
-        var item = button.parentNode;
+        var item = target.parentNode;
         var title = item.querySelector(".gcr-ext-editor-answer-title");
         var text = item.querySelector(".gcr-ext-editor-answer-text");
 
         // This is pretty lame.
-        if(button.textContent.toLowerCase() === "edit"){
+        if(target.textContent.toLowerCase() === "edit"){
             title.disabled = text.disabled = false;
-            button.textContent = "Save";
+            target.textContent = "Save";
             title.focus();
         }
-        else if(button.textContent.toLowerCase() === "save"){
+        else if(target.textContent.toLowerCase() === "save"){
             title.disabled = text.disabled = true;
-            button.textContent = "Edit";
+            target.textContent = "Edit";
 
             // Save locally.
             var answerId = item.answerId;
+
+            if (__quickReply[__gcrExtAnswers[item.answerId].name]) {
+                delete __quickReply[__gcrExtAnswers[item.answerId].name];
+                __quickReply[title.value] = text.value;
+            }
+
             __gcrExtAnswers[item.answerId].name = title.value;
             __gcrExtAnswers[item.answerId].description = text.value;
 
             // Save to local storage.
             gcrExtEditorSaveAnswers();
         }
-        else if(button.textContent.toLowerCase() === "delete"){
+        else if(target.textContent.toLowerCase() === "delete"){
             __gcrExtAnswers.splice(item.answerId, 1);
+            delete __quickReply[title.value];
+
+            // Save to local storage.
+            gcrExtEditorSaveAnswers();
+            gcrExtEditorUpdateAnswersList();
+        }
+        else if(event.target.classList.contains("quick-reply")) {
+            var checkbox = event.target;
+
+            if (event.target.type === "LABEL") {
+                checkbox = event.target.previousSibling;
+            }
+
+            if (checkbox.checked) {
+                __quickReply[title.value] = text.value;
+            }
+            else {
+                delete __quickReply[title.value];
+            }
+
             // Save to local storage.
             gcrExtEditorSaveAnswers();
             gcrExtEditorUpdateAnswersList();
@@ -89,7 +122,7 @@ function gcrExtEditorSetup(){
     });
 }
 
-function gcrExtEditorCreateItem(name, text){
+function gcrExtEditorCreateItem(name, text, isQuickReply){
     var li = document.createElement("li");
 
     var title = document.createElement("input");
@@ -111,9 +144,19 @@ function gcrExtEditorCreateItem(name, text){
     del.textContent = "Delete";
     del.style.marginLeft = "10px";
 
+    var quickReply = document.createElement("div");
+    quickReply.className = "btn btn-sm";
+    quickReply.innerHTML =
+        "<input type='checkbox' id='quick-reply-" + name + "' class='quick-reply quick-reply-check' " + (isQuickReply ? "checked" : "") + "></input>" +
+        "<label class='quick-reply quick-reply-label' for='quick-reply-" + name + "'>Quick reply</label>";
+    quickReply.style.marginLeft = "10px";
+    quickReply.style.display = "inline-block";
+
+
     li.appendChild(title);
     li.appendChild(desc);
     li.appendChild(edit);
     li.appendChild(del);
+    li.appendChild(quickReply);
     return li;
 }
