@@ -67,7 +67,7 @@ var __quickReply = {};
     }
 
     function addAnswerButton(){
-        var targets = document.querySelectorAll('.change_body.frxinner');
+        var targets = document.querySelectorAll('.change.frxouter');
 
         function insertButton(event){
             // If there's already a button nuke it so we can start fresh.
@@ -119,6 +119,9 @@ var __quickReply = {};
 
         for(var i = 0; i < targets.length; i++){
             observer.observe(targets[i], {
+                childList: true
+            });
+            observer.observe(targets[i].querySelector('.change_body.frxinner'), {
                 childList: true
             });
             targets[i].removeEventListener('click', insertButton);
