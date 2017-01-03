@@ -151,7 +151,7 @@ var __quickReply = {};
             document.getElementById("replyCommentForm").querySelector('.aui-button.aui-button-primary.postButton.defaultButton').click();
         };
 
-        var liElem = createNodeWithClass("li", "");
+        var liElem = createNodeWithClass("li", "cr-canned-response-quick-reply");
         liElem.appendChild(elem);
 
         return liElem;
@@ -163,7 +163,12 @@ var __quickReply = {};
         commentBlocks.forEach(function(commentBlock) {
             if (commentBlock.querySelector(".comment-actions-inner")) {
                 Object.keys(__quickReply).forEach(function(key) {
-                    commentBlock.querySelector(".comment-actions-inner").appendChild(createQuickReplyDom(key, __quickReply[key]));
+                    var actionElem = commentBlock.querySelector(".comment-actions-inner");
+
+                    actionElem.querySelectorAll(".cr-canned-response-quick-reply").forEach(function(elem) {
+                        elem.remove();
+                    });
+                    actionElem.appendChild(createQuickReplyDom(key, __quickReply[key]));
                 });
             }
         });
